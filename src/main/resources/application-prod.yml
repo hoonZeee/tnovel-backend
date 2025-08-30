@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:mysql://<RDS-ENDPOINT>:3306/tnovel?serverTimezone=Asia/Seoul
+    username: <RDS-USER>
+    password: <RDS-PASSWORD>
+
+  jpa:
+    hibernate:
+      ddl-auto: validate   # 운영에선 스키마 자동 변경 방지
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: false        # 운영에선 SQL 로그 OFF
+
+server:
+  port: 8080
