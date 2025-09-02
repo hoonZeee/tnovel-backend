@@ -6,11 +6,39 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate   # 운영에선 스키마 자동 변경 방지
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
-    show-sql: false        # 운영에선 SQL 로그 OFF
+    show-sql: false
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 3600000
+
+encrypt:
+  secret-key: ${ENCRYPT_SECRET_KEY}
+
+security:
+  oauth2:
+    client:
+      registration:
+        kakao:
+          client-id: ${KAKAO_CLIENT_ID}
+          client-secret: ${KAKAO_CLIENT_SECRET}
+          redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
+          authorization-grant-type: authorization_code
+          client-authentication-method: client_secret_post
+          scope:
+            - account_email
+            - profile_nickname
+            - profile_image
+      provider:
+        kakao:
+          authorization-uri: https://kauth.kakao.com/oauth/authorize
+          token-uri: https://kauth.kakao.com/oauth/token
+          user-info-uri: https://kapi.kakao.com/v2/user/me
+          user-name-attribute: id
 
 server:
   port: 8080
