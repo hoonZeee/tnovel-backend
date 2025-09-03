@@ -45,10 +45,10 @@ public class User {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<AuthAccount> authAccounts = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<UserConsent> userConsents = new ArrayList<>();
 
 //    @OneToMany(fetch = FetchType.LAZY,mappedBy = "user")
@@ -64,7 +64,7 @@ public class User {
 //    private List<Subscription> subscriptions = new ArrayList<>();
 
 
-    public static User create(String username, String name, String phoneNumberEncode, LocalDate birthDate){
+    public static User create(String username, String name, String phoneNumberEncode, LocalDate birthDate) {
         return new User(
                 null,
                 username,
@@ -79,6 +79,28 @@ public class User {
                 new ArrayList<>(),
                 new ArrayList<>()
 //                new ArrayList<>(),
+//                new ArrayList<>(),
+//                new ArrayList<>(),
+//                new ArrayList<>()
+        );
+    }
+
+    //admin 용 role 추가
+    public static User create(String username, String name, String phoneNumberEncode, LocalDate birthDate, Role role) {
+        return new User(
+                null,
+                username,
+                name,
+                null,
+                phoneNumberEncode,
+                birthDate,
+                role,
+                Status.ACTIVE,
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                new ArrayList<>(),
+                new ArrayList<>()
+                //                new ArrayList<>(),
 //                new ArrayList<>(),
 //                new ArrayList<>(),
 //                new ArrayList<>()
