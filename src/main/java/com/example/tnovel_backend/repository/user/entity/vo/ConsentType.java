@@ -1,6 +1,6 @@
 package com.example.tnovel_backend.repository.user.entity.vo;
 
-public enum LoginType {
-    LOCAL,
-    SOCIAL
+public enum ConsentType {
+    PRIVACY,
+    MARKETING
 }

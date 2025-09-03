@@ -48,9 +48,9 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "user")
     private List<AuthAccount> authAccounts = new ArrayList<>();
 
-//    @OneToMany(fetch = FetchType.LAZY,mappedBy = "user")
-//    private List<UserConsent> userConsents = new ArrayList<>();
-//
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "user")
+    private List<UserConsent> userConsents = new ArrayList<>();
+
 //    @OneToMany(fetch = FetchType.LAZY,mappedBy = "user")
 //    private List<Post> posts = new ArrayList<>();
 //
@@ -76,8 +76,8 @@ public class User {
                 Status.ACTIVE,
                 LocalDateTime.now(),
                 LocalDateTime.now(),
+                new ArrayList<>(),
                 new ArrayList<>()
-//                new ArrayList<>(),
 //                new ArrayList<>(),
 //                new ArrayList<>(),
 //                new ArrayList<>(),
@@ -97,8 +97,8 @@ public class User {
                 Status.ACTIVE,
                 LocalDateTime.now(),
                 LocalDateTime.now(),
+                new ArrayList<>(),
                 new ArrayList<>()
-//                new ArrayList<>(),
 //                new ArrayList<>(),
 //                new ArrayList<>(),
 //                new ArrayList<>(),
@@ -125,8 +125,8 @@ public class User {
                 Status.ACTIVE,
                 LocalDateTime.now(),
                 LocalDateTime.now(),
+                new ArrayList<>(),
                 new ArrayList<>()
-//                new ArrayList<>(),
 //                new ArrayList<>(),
 //                new ArrayList<>(),
 //                new ArrayList<>(),

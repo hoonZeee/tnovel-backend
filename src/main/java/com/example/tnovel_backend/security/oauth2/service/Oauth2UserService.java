@@ -58,7 +58,6 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
         }
 
 
-
         return OAuth2UserDetails.create(resource, user);
     }
 }

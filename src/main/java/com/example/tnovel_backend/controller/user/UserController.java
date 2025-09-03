@@ -1,8 +1,6 @@
 package com.example.tnovel_backend.controller.user;
 
-import com.example.tnovel_backend.controller.user.dto.request.KakaoRestLoginRequestDto;
 import com.example.tnovel_backend.controller.user.dto.request.LocalSignUpRequestDto;
-import com.example.tnovel_backend.controller.user.dto.response.JwtResponseDto;
 import com.example.tnovel_backend.controller.user.dto.response.SignUpResponseDto;
 import com.example.tnovel_backend.service.application.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;

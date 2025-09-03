@@ -2,16 +2,17 @@ package com.example.tnovel_backend.service.application.user;
 
 import com.example.tnovel_backend.configuration.PhoneEncryptor;
 import com.example.tnovel_backend.controller.user.dto.request.LocalSignUpRequestDto;
-import com.example.tnovel_backend.controller.user.dto.response.JwtResponseDto;
 import com.example.tnovel_backend.controller.user.dto.response.SignUpResponseDto;
 import com.example.tnovel_backend.exception.domain.UserException;
 import com.example.tnovel_backend.exception.error.UserErrorCode;
 import com.example.tnovel_backend.repository.user.AuthAccountRepository;
 import com.example.tnovel_backend.repository.user.LocalCredentialRepository;
+import com.example.tnovel_backend.repository.user.UserConsentRepository;
 import com.example.tnovel_backend.repository.user.UserRepository;
 import com.example.tnovel_backend.repository.user.entity.AuthAccount;
 import com.example.tnovel_backend.repository.user.entity.LocalCredential;
 import com.example.tnovel_backend.repository.user.entity.User;
+import com.example.tnovel_backend.repository.user.entity.UserConsent;
 import com.example.tnovel_backend.repository.user.entity.vo.Provider;
 import com.example.tnovel_backend.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final PhoneEncryptor phoneEncryptor;
     private final JwtProvider jwtProvider;
+    private final UserConsentRepository userConsentRepository;
 
 
 
@@ -76,6 +78,14 @@ public class UserService implements UserDetailsService {
                 authAccount
         );
         localCredentialRepository.save(credential);
+
+        if(request.getConsents()!=null){
+            List<UserConsent> consents = request.getConsents().stream()
+                    .map(type-> UserConsent.create(user, type))
+                    .toList();
+            userConsentRepository.saveAll(consents);
+        }
+
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(credential, null, credential.getAuthorities());
         String accessToken = jwtProvider.generate(authentication);

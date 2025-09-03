@@ -1,5 +1,6 @@
 package com.example.tnovel_backend.controller.user.dto.request;
 
+import com.example.tnovel_backend.repository.user.entity.vo.ConsentType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Getter
 @AllArgsConstructor
@@ -40,4 +42,7 @@ public class LocalSignUpRequestDto {
     @NotNull(message = "생년월일은 필수 입력값입니다.")
     @Past(message = "생년월일은 과거 날짜여야 합니다.")
     private LocalDate birthDate;
+
+    @Schema(description = "동의 항목들", example = "[\"PRIVACY\", \"MARKETING\"]")
+    private Set<ConsentType> consents;
 }
