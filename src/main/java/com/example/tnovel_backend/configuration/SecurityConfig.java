@@ -37,7 +37,7 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain jwtFilterChain(HttpSecurity http,
                                               AuthenticationManager authenticationManager) throws Exception {
-        http.securityMatcher("/signup", "/auth/**", "/api/**") // JWT 적용할 경로
+        http.securityMatcher("/signup", "/auth/**", "/api/**") // JWT
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 .addFilterAt(new JwtAuthorizationFilter(authenticationManager, jwtProvider),
@@ -50,7 +50,7 @@ public class SecurityConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain oauth2FilterChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/login/**", "/oauth2/**") // OAuth2 적용할 경로
+        http.securityMatcher("/login/**", "/oauth2/**") // OAuth2
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 .oauth2Login(oauth -> oauth
                         .loginPage("/login")

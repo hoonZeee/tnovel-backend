@@ -16,4 +16,15 @@
 
 ### 2025-09-02
 - 인증 방식 설정 : JWT 토큰
-- 
+- cors 설정 및 env 추가
+- PasswordEncoder : BCryptPasswordEncoder
+- PhoneEncryptor : AES (대칭키 암호화, 인증번호 및 마캐팅 목적)
+
+
+### 2025-09-03
+- 먼저 해야할 것 exception 핸들러 로직 먼저 추가
+- yml 정리
+- Oauth 로그인 추가
+- entity 마무리
+- swagger 
+- validation 검증

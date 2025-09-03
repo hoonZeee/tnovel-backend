@@ -29,6 +29,7 @@ public class PhoneEncryptor {
         }
     }
 
+    // 시간적 여유가 되면 전화번호 인증용 서비스 로직 추가 예정
     public String decrypt(String cipherText) {
         try {
             Cipher cipher = Cipher.getInstance(ALGORITHM);
