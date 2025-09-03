@@ -12,6 +12,7 @@ spring:
       hibernate:
         format_sql: true
     show-sql: false
+    open-in-view: false
 
   security:
     oauth2:
@@ -24,9 +25,7 @@ spring:
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
             scope:
-              - account_email
               - profile_nickname
-              - profile_image
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
@@ -43,3 +42,8 @@ encrypt:
 
 server:
   port: 8080
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web.client.RestTemplate: DEBUG

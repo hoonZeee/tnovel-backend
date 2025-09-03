@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -36,7 +37,19 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     }
 
     private Collection<? extends GrantedAuthority> getAuthoritiesFromToken(Claims claims) {
-        return Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+
+        Object raw = claims.get(AUTHORITIES_KEY);
+
+        if (raw == null) {
+            String singleRole = claims.get("role", String.class);
+            if (singleRole == null) {
+                throw new JwtInvalidException("권한 정보 없음");
+            }
+            return List.of(new SimpleGrantedAuthority("ROLE_" + singleRole));
+        }
+
+        return Arrays.stream(raw.toString().split(","))
+                .map(String::trim)
                 .map(SimpleGrantedAuthority::new)
                 .toList();
     }

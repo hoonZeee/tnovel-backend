@@ -1,5 +1,6 @@
 package com.example.tnovel_backend.security.oauth2.principal;
 
+import com.example.tnovel_backend.repository.user.entity.User;
 import com.example.tnovel_backend.security.oauth2.resource.OAuth2Resource;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,20 +15,22 @@ import java.util.Map;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class OAuth2UserDetails implements OAuth2User {
-    private UserDetails user;
-    private Map<String, Object> attributes;
-    private Collection<? extends GrantedAuthority> authorities;
+    private final String username;
+    private final String role;
+    private final Collection<? extends GrantedAuthority> authorities;
+    private final Map<String, Object> attributes;
 
     @Override
-    public String getName(){
-        return user.getUsername();
+    public String getName() {
+        return username;
     }
 
-    public static OAuth2UserDetails create(OAuth2Resource resource, UserDetails user){
+    public static OAuth2UserDetails create(OAuth2Resource resource, User user) {
         return new OAuth2UserDetails(
-                user,
-                resource.getAttributes(),
-                user.getAuthorities()
+                user.getUsername(),
+                user.getRole().name(),
+                user.getRole().getAuthorities(),
+                resource.getAttributes()
         );
     }
 }

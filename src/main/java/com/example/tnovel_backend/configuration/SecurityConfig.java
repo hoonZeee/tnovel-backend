@@ -53,7 +53,7 @@ public class SecurityConfig {
         http.securityMatcher("/login/**", "/oauth2/**") // OAuth2
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 .oauth2Login(oauth -> oauth
-                        .loginPage("/login")
+                        .loginPage("/oauth2/authorization/kakao")
                         .userInfoEndpoint(user -> user.userService(oauth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                 );

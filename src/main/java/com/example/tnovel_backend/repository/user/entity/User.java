@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Entity
@@ -63,14 +64,14 @@ public class User {
 //    private List<Subscription> subscriptions = new ArrayList<>();
 
 
-    public static User create(String username, String name, String phoneNumberEncode){
+    public static User create(String username, String name, String phoneNumberEncode, LocalDate birthDate){
         return new User(
                 null,
                 username,
                 name,
                 null,
                 phoneNumberEncode,
-                null,
+                birthDate,
                 Role.USER,
                 Status.ACTIVE,
                 LocalDateTime.now(),
@@ -89,6 +90,34 @@ public class User {
                 null,
                 resource.getProvider().name() + "_" + resource.getProviderId(), // UNIQUE 보장
                 null,
+                null,
+                null,
+                null,
+                Role.USER,
+                Status.ACTIVE,
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                new ArrayList<>()
+//                new ArrayList<>(),
+//                new ArrayList<>(),
+//                new ArrayList<>(),
+//                new ArrayList<>(),
+//                new ArrayList<>()
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    public static User createFromKakao(Map<String, Object> kakaoUserInfo) {
+        String providerUserId = String.valueOf(kakaoUserInfo.get("id"));
+        Map<String, Object> account = (Map<String, Object>) kakaoUserInfo.get("kakao_account");
+        Map<String, Object> profile = (Map<String, Object>) account.get("profile");
+
+        String nickname = profile != null ? (String) profile.get("nickname") : null;
+
+        return new User(
+                null,
+                "KAKAO_" + providerUserId,
+                nickname,
                 null,
                 null,
                 null,

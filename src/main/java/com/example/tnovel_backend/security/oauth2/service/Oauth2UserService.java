@@ -10,31 +10,30 @@ import com.example.tnovel_backend.security.oauth2.resource.OAuth2KakaoResource;
 import com.example.tnovel_backend.security.oauth2.resource.OAuth2Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class Oauth2UserService extends DefaultOAuth2UserService {
+
     private final UserRepository userRepository;
     private final AuthAccountRepository authAccountRepository;
 
-    private OAuth2Resource extract(String provider, OAuth2User resourceResponse){
-        return switch(Provider.findByName(provider)) {
+    private OAuth2Resource extract(String provider, OAuth2User resourceResponse) {
+        return switch (Provider.findByName(provider)) {
             case KAKAO -> OAuth2KakaoResource.create(resourceResponse);
             default -> throw new IllegalArgumentException("존재하지 않은 RegistrationId : " + provider);
         };
     }
 
     @Override
+    @Transactional
     public OAuth2User loadUser(OAuth2UserRequest resourceRequest) throws OAuth2AuthenticationException {
         final OAuth2User resourceResponse = super.loadUser(resourceRequest);
         final OAuth2Resource resource = extract(
@@ -58,14 +57,8 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
             authAccountRepository.save(newAuthAccount);
         }
 
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                "",
-                List.of(new SimpleGrantedAuthority(user.getRole().name()))
-        );
 
-        return OAuth2UserDetails.create(resource, userDetails);
 
+        return OAuth2UserDetails.create(resource, user);
     }
-
 }

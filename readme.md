@@ -10,7 +10,14 @@
 - `BusinessException`을 상위 예외 클래스로 하여, 도메인별 예외(`UserException` 등)를 세분화
 - 전역 예외 핸들러 `ExceptionAdvice`에서 `@ExceptionHandler(BusinessException.class)`로 통합 처리
 - Validation 관련 예외 (`MethodArgumentNotValidException`, `ConstraintViolationException`) 및 `ResponseStatusException`도 별도 처리
-- 
+
+---
+### 로그인 방식
+- 지원: LOCAL, KAKAO, GOOGLE, APPLE, NAVER
+- 카카오 로그인: 구현 완료 (API 호출 성공 및 DB 저장 정상 동작)
+- 로컬 회원가입 및 모든 소셜 로그인 시 JWT 토큰 발급 (username + role 기반)
+![로그인 성공 API](./docs/kakao-login.png)
+
 ## 📖작업일지 
 
 ### 2025-08-30
@@ -28,9 +35,8 @@
 
 
 ### 2025-09-03
-- 먼저 해야할 것 exception 핸들러 로직 먼저 추가
-- yml 정리
+- 먼저 해야할 것 exception 핸들러 로직 먼저 추가 완료
 - Oauth 로그인 추가
 - entity 마무리
-- swagger 
-- validation 검증
+- swagger 추가 완료
+- 로컬 회원가입 Validation 검증 완료

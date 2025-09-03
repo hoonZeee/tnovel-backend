@@ -2,6 +2,7 @@ package com.example.tnovel_backend.service.application.user;
 
 import com.example.tnovel_backend.configuration.PhoneEncryptor;
 import com.example.tnovel_backend.controller.user.dto.request.LocalSignUpRequestDto;
+import com.example.tnovel_backend.controller.user.dto.response.JwtResponseDto;
 import com.example.tnovel_backend.controller.user.dto.response.SignUpResponseDto;
 import com.example.tnovel_backend.exception.domain.UserException;
 import com.example.tnovel_backend.exception.error.UserErrorCode;
@@ -14,12 +15,19 @@ import com.example.tnovel_backend.repository.user.entity.User;
 import com.example.tnovel_backend.repository.user.entity.vo.Provider;
 import com.example.tnovel_backend.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -31,6 +39,9 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final PhoneEncryptor phoneEncryptor;
     private final JwtProvider jwtProvider;
+
+
+
 
     @Transactional
     public SignUpResponseDto signupLocal(LocalSignUpRequestDto request) {
@@ -48,7 +59,8 @@ public class UserService implements UserDetailsService {
         User user = User.create(
                 request.getUsername(),
                 request.getName(),
-                encryptedPhone
+                encryptedPhone,
+                request.getBirthDate()
         );
         userRepository.save(user);
 
@@ -65,7 +77,8 @@ public class UserService implements UserDetailsService {
         );
         localCredentialRepository.save(credential);
 
-        String accessToken = jwtProvider.generate(user.getUsername(), user.getRole().name());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(credential, null, credential.getAuthorities());
+        String accessToken = jwtProvider.generate(authentication);
 
         return SignUpResponseDto.from(user, accessToken);
 

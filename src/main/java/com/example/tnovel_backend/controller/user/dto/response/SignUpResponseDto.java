@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,6 +15,7 @@ public class SignUpResponseDto {
     private Integer id;
     private String username;
     private String name;
+    private LocalDate birthDate;
     private String profileImage;
     private String role;
     private String status;
@@ -25,6 +27,7 @@ public class SignUpResponseDto {
                 user.getId(),
                 user.getUsername(),
                 user.getName(),
+                user.getBirthDate(),
                 user.getProfileImage(),
                 user.getRole().name(),
                 user.getStatus().name(),

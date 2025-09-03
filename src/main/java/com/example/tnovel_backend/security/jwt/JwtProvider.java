@@ -1,6 +1,7 @@
 package com.example.tnovel_backend.security.jwt;
 
 import com.example.tnovel_backend.repository.user.entity.LocalCredential;
+import com.example.tnovel_backend.security.oauth2.principal.OAuth2UserDetails;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -42,10 +43,28 @@ public class JwtProvider implements InitializingBean {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
+        String role = authentication.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .map(auth -> auth.replace("ROLE_", "")) // "ROLE_USER" → "USER"
+                .orElse("USER"); // 기본값
+
+
+        Object principal = authentication.getPrincipal();
+        String nickname;
+
+        if (principal instanceof LocalCredential) {
+            nickname = ((LocalCredential) principal).getAuthAccount().getUser().getName();
+        } else if (principal instanceof OAuth2UserDetails) {
+            nickname = ((OAuth2UserDetails) principal).getUsername();
+        } else {
+            nickname = "UNKNOWN";
+        }
+
         return Jwts.builder()
                 .subject(username)
-                .claim("nickname", ((LocalCredential) authentication.getPrincipal())
-                        .getAuthAccount().getUser().getUsername())
+                .claim("nickname", nickname)
+                .claim("roles", role)
                 .claim(JwtAuthenticationProvider.AUTHORITIES_KEY, authorities)
                 .signWith(key)
                 .issuedAt(currentDate)
@@ -53,16 +72,7 @@ public class JwtProvider implements InitializingBean {
                 .compact();
     }
 
-    public String generate(String username, String role) {
-        Date currentDate = new Date();
-        Date expireDate = new Date(currentDate.getTime() + (expiration * 1000));
 
-        return Jwts.builder()
-                .subject(username)
-                .claim("role", role)
-                .issuedAt(currentDate)
-                .expiration(expireDate)
-                .signWith(key)
-                .compact();
-    }
+
+
 }

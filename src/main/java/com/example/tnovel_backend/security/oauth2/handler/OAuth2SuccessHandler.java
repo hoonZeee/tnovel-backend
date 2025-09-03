@@ -26,11 +26,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         OAuth2AuthenticationToken authenticationToken = (OAuth2AuthenticationToken) authentication;
-        OAuth2UserDetails principal = (OAuth2UserDetails) authenticationToken.getPrincipal();
-        User user = (User) principal.getUser();
 
-        String token = jwtProvider.generate(authenticationToken);
+        String token = jwtProvider.generate(authentication);
+
         String redirectUrl = JwtAuthorizationFilter.getRedirectUrl(request, response);
+
         ResponseCookie cookie = ResponseCookie.from("accessToken", token)
                 .httpOnly(true)
                 .secure(true)
@@ -38,7 +38,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .maxAge(60 * 60 * 24)
                 .sameSite("Strict")
                 .build();
+
         response.addHeader("Set-Cookie", cookie.toString());
         response.sendRedirect(redirectUrl);
     }
+
 }

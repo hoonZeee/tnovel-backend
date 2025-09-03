@@ -7,25 +7,29 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
-@RestController
+@RestControllerAdvice
 public class ExceptionAdvice {
 
 
     @ExceptionHandler(BusinessException.class)
-    public ProblemDetail handleBusiness(BusinessException e) {
+    public ResponseEntity<ProblemDetail> handleBusiness(BusinessException e) {
         ErrorCode c = e.getCode();
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(c.getHttpStatus(), c.getMessage());
         pd.setTitle(c.getHttpStatus().getReasonPhrase());
         pd.setProperty("code", c.name());
-        return pd;
+
+        return ResponseEntity
+                .status(c.getHttpStatus())
+                .body(pd);
     }
 
 
