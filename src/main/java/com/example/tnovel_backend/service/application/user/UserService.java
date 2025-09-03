@@ -1,7 +1,9 @@
 package com.example.tnovel_backend.service.application.user;
 
 import com.example.tnovel_backend.configuration.PhoneEncryptor;
+import com.example.tnovel_backend.controller.user.dto.request.LocalLoginRequestDto;
 import com.example.tnovel_backend.controller.user.dto.request.LocalSignUpRequestDto;
+import com.example.tnovel_backend.controller.user.dto.response.LoginResponseDto;
 import com.example.tnovel_backend.controller.user.dto.response.SignUpResponseDto;
 import com.example.tnovel_backend.exception.domain.UserException;
 import com.example.tnovel_backend.exception.error.UserErrorCode;
@@ -14,9 +16,9 @@ import com.example.tnovel_backend.repository.user.entity.LocalCredential;
 import com.example.tnovel_backend.repository.user.entity.User;
 import com.example.tnovel_backend.repository.user.entity.UserConsent;
 import com.example.tnovel_backend.repository.user.entity.vo.Provider;
+import com.example.tnovel_backend.repository.user.entity.vo.Status;
 import com.example.tnovel_backend.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,10 +27,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.Map;
 
 
 @Service
@@ -42,7 +42,38 @@ public class UserService implements UserDetailsService {
     private final JwtProvider jwtProvider;
     private final UserConsentRepository userConsentRepository;
 
+    @Transactional(readOnly = true)
+    public LoginResponseDto loginLocal(LocalLoginRequestDto request) {
+        AuthAccount authAccount;
 
+        if (request.getUsername() != null) {
+            authAccount = authAccountRepository.findByProviderAndProviderUserId(Provider.LOCAL, request.getUsername())
+                    .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        } else if (request.getPhoneNumber() != null) {
+            String encryptedPhone = phoneEncryptor.encrypt(request.getPhoneNumber());
+            authAccount = authAccountRepository.findByProviderAndUser_PhoneNumberEncode(Provider.LOCAL, encryptedPhone)
+                    .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        } else {
+            throw new UserException(UserErrorCode.LOGIN_ID_REQUIRED);
+        }
+
+        LocalCredential credential = localCredentialRepository.findByAuthAccount(authAccount)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(request.getPassword(), credential.getPassword())) {
+            throw new UserException(UserErrorCode.INVALID_PASSWORD);
+        }
+
+        User user = authAccount.getUser();
+        if (user.getStatus() != Status.ACTIVE) {
+            throw new UserException(UserErrorCode.ACCOUNT_INACTIVE);
+        }
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(credential, null, credential.getAuthorities());
+        String accessToken = jwtProvider.generate(authentication);
+        return new LoginResponseDto(accessToken);
+
+    }
 
 
     @Transactional
@@ -79,9 +110,9 @@ public class UserService implements UserDetailsService {
         );
         localCredentialRepository.save(credential);
 
-        if(request.getConsents()!=null){
+        if (request.getConsents() != null) {
             List<UserConsent> consents = request.getConsents().stream()
-                    .map(type-> UserConsent.create(user, type))
+                    .map(type -> UserConsent.create(user, type))
                     .toList();
             userConsentRepository.saveAll(consents);
         }
@@ -95,15 +126,11 @@ public class UserService implements UserDetailsService {
     }
 
 
-
-
     @Override
     public UserDetails loadUserByUsername(String phoneNumberEncode) throws UsernameNotFoundException {
         return localCredentialRepository.findByAuthAccount_User_PhoneNumberEncode(phoneNumberEncode)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
     }
-
-
 
 
 }

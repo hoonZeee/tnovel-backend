@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface AuthAccountRepository extends JpaRepository<AuthAccount, Integer> {
     Optional<AuthAccount> findByProviderAndProviderUserId(Provider provider, String providerUserId);
+
+    Optional<AuthAccount> findByProviderAndUser_PhoneNumberEncode(Provider provider, String encryptedPhone);
 }
