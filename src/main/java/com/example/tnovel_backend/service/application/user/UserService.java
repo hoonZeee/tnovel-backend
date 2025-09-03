@@ -3,6 +3,8 @@ package com.example.tnovel_backend.service.application.user;
 import com.example.tnovel_backend.configuration.PhoneEncryptor;
 import com.example.tnovel_backend.controller.user.dto.request.LocalSignUpRequestDto;
 import com.example.tnovel_backend.controller.user.dto.response.SignUpResponseDto;
+import com.example.tnovel_backend.exception.domain.UserException;
+import com.example.tnovel_backend.exception.error.UserErrorCode;
 import com.example.tnovel_backend.repository.user.AuthAccountRepository;
 import com.example.tnovel_backend.repository.user.LocalCredentialRepository;
 import com.example.tnovel_backend.repository.user.UserRepository;
@@ -10,8 +12,6 @@ import com.example.tnovel_backend.repository.user.entity.AuthAccount;
 import com.example.tnovel_backend.repository.user.entity.LocalCredential;
 import com.example.tnovel_backend.repository.user.entity.User;
 import com.example.tnovel_backend.repository.user.entity.vo.Provider;
-import com.example.tnovel_backend.repository.user.entity.vo.Role;
-import com.example.tnovel_backend.repository.user.entity.vo.Status;
 import com.example.tnovel_backend.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,8 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -38,11 +36,11 @@ public class UserService implements UserDetailsService {
     public SignUpResponseDto signupLocal(LocalSignUpRequestDto request) {
 
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("이미 사용 중인 아이디(username)입니다.");
+            throw new UserException(UserErrorCode.DUPLICATE_USERNAME);
         }
 
         if (userRepository.findByName(request.getName()).isPresent()) {
-            throw new IllegalArgumentException("이미 사용 중인 닉네임(name)입니다.");
+            throw new UserException(UserErrorCode.DUPLICATE_NICKNAME);
         }
 
         String encryptedPhone = phoneEncryptor.encrypt(request.getPhoneNumber());
@@ -79,9 +77,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String phoneNumberEncode) throws UsernameNotFoundException {
         return localCredentialRepository.findByAuthAccount_User_PhoneNumberEncode(phoneNumberEncode)
-                .orElseThrow(() -> new UsernameNotFoundException(
-                        "존재하지 않는 유저입니다 - phoneNumberEncode : " + phoneNumberEncode
-                ));
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
     }
 
 

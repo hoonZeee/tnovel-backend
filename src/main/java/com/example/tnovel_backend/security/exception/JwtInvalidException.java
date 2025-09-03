@@ -1,4 +1,4 @@
-package com.example.tnovel_backend.exception;
+package com.example.tnovel_backend.security.exception;
 
 import org.springframework.security.core.AuthenticationException;
 

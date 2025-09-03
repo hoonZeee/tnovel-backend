@@ -1,6 +1,6 @@
 package com.example.tnovel_backend.security.jwt;
 
-import com.example.tnovel_backend.exception.JwtInvalidException;
+import com.example.tnovel_backend.security.exception.JwtInvalidException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

@@ -4,7 +4,13 @@
 ### ERD 구조도
 ![ERD 다이어그램](./docs/tnovel-erd.png)
 
-
+---
+### Exception 설계
+- `ErrorCode` 인터페이스를 기반으로 도메인별 에러 코드(enum)를 일관성 있게 정의
+- `BusinessException`을 상위 예외 클래스로 하여, 도메인별 예외(`UserException` 등)를 세분화
+- 전역 예외 핸들러 `ExceptionAdvice`에서 `@ExceptionHandler(BusinessException.class)`로 통합 처리
+- Validation 관련 예외 (`MethodArgumentNotValidException`, `ConstraintViolationException`) 및 `ResponseStatusException`도 별도 처리
+- 
 ## 📖작업일지 
 
 ### 2025-08-30
