@@ -3,6 +3,7 @@ package com.example.tnovel_backend.controller.admin;
 import com.example.tnovel_backend.controller.admin.dto.request.AdminLoginRequestDto;
 import com.example.tnovel_backend.controller.admin.dto.request.AdminSignUpRequestDto;
 import com.example.tnovel_backend.controller.admin.dto.request.UpdateUserStateRequestDto;
+import com.example.tnovel_backend.controller.admin.dto.request.UserTotalSearchRequest;
 import com.example.tnovel_backend.controller.user.dto.response.LoginResponseDto;
 import com.example.tnovel_backend.controller.user.dto.response.SignUpResponseDto;
 import com.example.tnovel_backend.controller.user.dto.response.UserSimpleResponseDto;
@@ -24,7 +25,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Tag(name = "어드민", description = "어드민 관련 API")
 @RestController
@@ -121,4 +121,20 @@ public class AdminController {
         UserSimpleResponseDto updated = adminService.updateUserStatus(userId, request.getStatus());
         return ResponseEntity.ok(updated);
     }
+
+
+    @Operation(summary = "유저 통합 검색", description = "username, name, createdDate, status 등 조합 검색")
+    @PostMapping("/user/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<UserSimpleResponseDto>> searchUsers(
+            @RequestBody UserTotalSearchRequest request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<UserSimpleResponseDto> result = adminService.searchUsers(request, pageable);
+        return ResponseEntity.ok(result);
+    }
+
+
 }

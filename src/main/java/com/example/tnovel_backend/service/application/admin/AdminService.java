@@ -3,6 +3,7 @@ package com.example.tnovel_backend.service.application.admin;
 import com.example.tnovel_backend.configuration.PhoneEncryptor;
 import com.example.tnovel_backend.controller.admin.dto.request.AdminLoginRequestDto;
 import com.example.tnovel_backend.controller.admin.dto.request.AdminSignUpRequestDto;
+import com.example.tnovel_backend.controller.admin.dto.request.UserTotalSearchRequest;
 import com.example.tnovel_backend.controller.user.dto.response.LoginResponseDto;
 import com.example.tnovel_backend.controller.user.dto.response.SignUpResponseDto;
 import com.example.tnovel_backend.controller.user.dto.response.UserSimpleResponseDto;
@@ -41,6 +42,12 @@ public class AdminService {
     private final PhoneEncryptor phoneEncryptor;
     private final JwtProvider jwtProvider;
 
+
+    @Transactional(readOnly = true)
+    public Page<UserSimpleResponseDto> searchUsers(UserTotalSearchRequest request, Pageable pageable) {
+        return userRepository.searchUsers(request, pageable)
+                .map(UserSimpleResponseDto::from);
+    }
 
     @Transactional
     public UserSimpleResponseDto updateUserStatus(Integer userId, Status newStatus) {
