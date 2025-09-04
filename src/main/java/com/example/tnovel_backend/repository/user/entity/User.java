@@ -51,17 +51,22 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<UserConsent> userConsents = new ArrayList<>();
 
-//    @OneToMany(fetch = FetchType.LAZY,mappedBy = "user")
-//    private List<Post> posts = new ArrayList<>();
-//
-//    @OneToMany(fetch = FetchType.LAZY,mappedBy = "user")
-//    private List<Comment> comments = new ArrayList<>();
-//
-//    @OneToMany(fetch = FetchType.LAZY,mappedBy = "user")
-//    private List<PostReport> postReports = new ArrayList<>();
-//
-//    @OneToMany(fetch = FetchType.LAZY,mappedBy = "user")
-//    private List<Subscription> subscriptions = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Post> posts = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<PostReport> postReports = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Subscription> subscriptions = new ArrayList<>();
+
+    public void ban() {
+        this.status = Status.BANNED;
+        this.updatedAt = LocalDateTime.now();
+    }
 
 
     public static User create(String username, String name, String phoneNumberEncode, LocalDate birthDate) {
@@ -77,11 +82,11 @@ public class User {
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
                 new ArrayList<>()
-//                new ArrayList<>(),
-//                new ArrayList<>(),
-//                new ArrayList<>(),
-//                new ArrayList<>()
         );
     }
 
@@ -99,11 +104,11 @@ public class User {
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
                 new ArrayList<>()
-                //                new ArrayList<>(),
-//                new ArrayList<>(),
-//                new ArrayList<>(),
-//                new ArrayList<>()
         );
     }
 
@@ -120,11 +125,11 @@ public class User {
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
                 new ArrayList<>()
-//                new ArrayList<>(),
-//                new ArrayList<>(),
-//                new ArrayList<>(),
-//                new ArrayList<>()
         );
     }
 
@@ -148,11 +153,11 @@ public class User {
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
                 new ArrayList<>()
-//                new ArrayList<>(),
-//                new ArrayList<>(),
-//                new ArrayList<>(),
-//                new ArrayList<>()
         );
     }
 

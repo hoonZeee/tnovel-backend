@@ -11,7 +11,8 @@ public enum UserErrorCode implements ErrorCode {
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
     LOGIN_ID_REQUIRED(HttpStatus.BAD_REQUEST, "아이디 또는 전화번호를 입력해주세요."),
     ACCOUNT_INACTIVE(HttpStatus.FORBIDDEN, "비활성화된 계정입니다."),
-    FORBIDDEN(HttpStatus.FORBIDDEN, "권한이 없습니다.");
+    FORBIDDEN(HttpStatus.FORBIDDEN, "권한이 없습니다."),
+    ALREADY_IN_STATUS(HttpStatus.BAD_REQUEST, "이미 해당 상태입니다.");
 
     private final HttpStatus status;
 

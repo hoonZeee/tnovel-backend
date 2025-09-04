@@ -2,6 +2,7 @@ package com.example.tnovel_backend.controller.user.dto.response;
 
 import com.example.tnovel_backend.repository.user.entity.User;
 import com.example.tnovel_backend.repository.user.entity.vo.Role;
+import com.example.tnovel_backend.repository.user.entity.vo.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ public class UserSimpleResponseDto {
     private String name;
     private String phoneNumberEncode;
     private Role role;
+    private Status status;
     private LocalDateTime createdAt;
 
     public static UserSimpleResponseDto from(User user) {
@@ -27,6 +29,7 @@ public class UserSimpleResponseDto {
                 user.getName(),
                 user.getPhoneNumberEncode(),
                 user.getRole(),
+                user.getStatus(),
                 user.getCreatedAt()
         );
     }

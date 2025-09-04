@@ -7,6 +7,7 @@ import com.example.tnovel_backend.controller.user.dto.response.LoginResponseDto;
 import com.example.tnovel_backend.controller.user.dto.response.SignUpResponseDto;
 import com.example.tnovel_backend.controller.user.dto.response.UserSimpleResponseDto;
 import com.example.tnovel_backend.exception.domain.UserException;
+import com.example.tnovel_backend.exception.error.ErrorCode;
 import com.example.tnovel_backend.exception.error.UserErrorCode;
 import com.example.tnovel_backend.repository.user.AuthAccountRepository;
 import com.example.tnovel_backend.repository.user.LocalCredentialRepository;
@@ -19,12 +20,16 @@ import com.example.tnovel_backend.repository.user.entity.vo.Role;
 import com.example.tnovel_backend.repository.user.entity.vo.Status;
 import com.example.tnovel_backend.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -39,13 +44,52 @@ public class AdminService {
     private final JwtProvider jwtProvider;
 
 
-    @Transactional(readOnly = true)
-    public List<UserSimpleResponseDto> getAllUsersOrderByCreatedAtDesc() {
-        return userRepository.findAllByOrderByCreatedAtDesc()
-                .stream()
-                .map(UserSimpleResponseDto::from)
-                .toList();
+    @Transactional
+    public UserSimpleResponseDto updateUserStatus(Integer userId, Status newStatus) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        if (user.getStatus() == newStatus) {
+            throw new UserException(UserErrorCode.ALREADY_IN_STATUS);
+        }
+
+        user.ban();
+
+        return UserSimpleResponseDto.from(user);
     }
+
+    @Transactional(readOnly = true)
+    public Page<UserSimpleResponseDto> getAllUsersOrderByCreatedAtDesc(Pageable pageable) {
+        return userRepository.findAllByOrderByCreatedAtDesc(pageable)
+                .map(UserSimpleResponseDto::from);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<UserSimpleResponseDto> searchByUsername(String keyword, Pageable pageable) {
+        return userRepository.findByUsernameContainingIgnoreCaseOrderByCreatedAtDesc(keyword, pageable)
+                .map(UserSimpleResponseDto::from);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<UserSimpleResponseDto> searchByName(String keyword, Pageable pageable) {
+        return userRepository.findByNameContainingIgnoreCaseOrderByCreatedAtDesc(keyword, pageable)
+                .map(UserSimpleResponseDto::from);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<UserSimpleResponseDto> searchByCreatedAt(LocalDate date, Pageable pageable) {
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.plusDays(1).atStartOfDay();
+        return userRepository.findByCreatedAtBetween(start, end, pageable)
+                .map(UserSimpleResponseDto::from);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<UserSimpleResponseDto> searchByStatus(Status status, Pageable pageable) {
+        return userRepository.findByStatusOrderByCreatedAtDesc(status, pageable)
+                .map(UserSimpleResponseDto::from);
+    }
+
 
     @Transactional(readOnly = true)
     public LoginResponseDto loginAdmin(AdminLoginRequestDto request) {

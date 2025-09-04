@@ -1,6 +1,6 @@
 package com.example.tnovel_backend.repository.post.entity;
 
-import com.example.tnovel_backend.repository.user.entity.User;
+import com.example.tnovel_backend.repository.post.entity.vo.VisibleStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,29 +13,28 @@ import java.time.LocalDateTime;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Comment {
+public class PostMedia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String contentText;
+    @Enumerated
+    private VisibleStatus visibleStatus;
+
+    private String imageUrl;
+
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
     private Post post;
 
-    public static Comment create(String contentText, User user, Post post) {
-        return new Comment(
+    public static PostMedia create(String imageUrl, Post post) {
+        return new PostMedia(
                 null,
-                contentText,
+                VisibleStatus.VISIBLE,
+                imageUrl,
                 LocalDateTime.now(),
-                user,
                 post
         );
     }
