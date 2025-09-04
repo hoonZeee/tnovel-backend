@@ -21,6 +21,7 @@ public class UserSimpleResponseDto {
     private Role role;
     private Status status;
     private LocalDateTime createdAt;
+    private LocalDateTime lastLoginAt;
 
     public static UserSimpleResponseDto from(User user) {
         return new UserSimpleResponseDto(
@@ -30,7 +31,8 @@ public class UserSimpleResponseDto {
                 user.getPhoneNumberEncode(),
                 user.getRole(),
                 user.getStatus(),
-                user.getCreatedAt()
+                user.getCreatedAt(),
+                user.getLastLoginAt()
         );
     }
 

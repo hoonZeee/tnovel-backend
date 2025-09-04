@@ -44,6 +44,7 @@ public class User {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime lastLoginAt;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<AuthAccount> authAccounts = new ArrayList<>();
@@ -68,6 +69,9 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void updateLastLoginAt(LocalDateTime time) {
+        this.lastLoginAt = time;
+    }
 
     public static User create(String username, String name, String phoneNumberEncode, LocalDate birthDate) {
         return new User(
@@ -81,6 +85,7 @@ public class User {
                 Status.ACTIVE,
                 LocalDateTime.now(),
                 LocalDateTime.now(),
+                null,
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
@@ -103,6 +108,7 @@ public class User {
                 Status.ACTIVE,
                 LocalDateTime.now(),
                 LocalDateTime.now(),
+                null,
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
@@ -124,6 +130,7 @@ public class User {
                 Status.ACTIVE,
                 LocalDateTime.now(),
                 LocalDateTime.now(),
+                null,
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
@@ -152,6 +159,7 @@ public class User {
                 Status.ACTIVE,
                 LocalDateTime.now(),
                 LocalDateTime.now(),
+                null,
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),

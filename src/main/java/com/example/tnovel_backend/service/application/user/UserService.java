@@ -28,6 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -42,7 +43,7 @@ public class UserService implements UserDetailsService {
     private final JwtProvider jwtProvider;
     private final UserConsentRepository userConsentRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public LoginResponseDto loginLocal(LocalLoginRequestDto request) {
         AuthAccount authAccount;
 
@@ -68,6 +69,9 @@ public class UserService implements UserDetailsService {
         if (user.getStatus() != Status.ACTIVE) {
             throw new UserException(UserErrorCode.ACCOUNT_INACTIVE);
         }
+
+        user.updateLastLoginAt(LocalDateTime.now());
+        userRepository.save(user);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(credential, null, credential.getAuthorities());
         String accessToken = jwtProvider.generate(authentication);

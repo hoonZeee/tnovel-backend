@@ -7,7 +7,6 @@ import com.example.tnovel_backend.controller.user.dto.response.LoginResponseDto;
 import com.example.tnovel_backend.controller.user.dto.response.SignUpResponseDto;
 import com.example.tnovel_backend.controller.user.dto.response.UserSimpleResponseDto;
 import com.example.tnovel_backend.exception.domain.UserException;
-import com.example.tnovel_backend.exception.error.ErrorCode;
 import com.example.tnovel_backend.exception.error.UserErrorCode;
 import com.example.tnovel_backend.repository.user.AuthAccountRepository;
 import com.example.tnovel_backend.repository.user.LocalCredentialRepository;
@@ -30,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -91,7 +89,7 @@ public class AdminService {
     }
 
 
-    @Transactional(readOnly = true)
+    @Transactional
     public LoginResponseDto loginAdmin(AdminLoginRequestDto request) {
         AuthAccount authAccount = authAccountRepository.findByProviderAndProviderUserId(
                 Provider.LOCAL,
@@ -115,6 +113,9 @@ public class AdminService {
         if (user.getRole() != Role.ADMIN) {
             throw new UserException(UserErrorCode.FORBIDDEN);
         }
+
+        user.updateLastLoginAt(LocalDateTime.now());
+        userRepository.save(user);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 credential,
