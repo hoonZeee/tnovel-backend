@@ -35,13 +35,21 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET}
-  expiration: 3600000   # 밀리초 단위 (1시간)
+  expiration: 3600000
 
 encrypt:
   secret-key: ${ENCRYPT_SECRET_KEY}
 
 server:
   port: 8080
+
+portone:
+  base-url: https://api.iamport.kr
+  rest:
+    api-key: ${PORTONE_REST_API_KEY}
+    api-secret: ${PORTONE_REST_API_SECRET}
+
+
 
 logging:
   level:

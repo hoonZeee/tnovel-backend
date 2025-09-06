@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -20,19 +21,47 @@ public class SubscriptionPayment {
 
     private String impUid; //아임포트 고유결제 id
     private String merchantUid; //결요청 id
-    private Double amountExpected; //서버권위금액
-    private Double amountPaid; //실결제금액
+    private BigDecimal amountExpected; //서버권위금액
+    private BigDecimal amountPaid; //실결제금액
 
     @Enumerated(EnumType.STRING)
     private PayStatus payStatus;
 
     private LocalDateTime paidAt;
 
-    private String failureCode;
-    private String failureMessage;
-    
-    @OneToOne
-    @JoinColumn(name = "subscription_id", unique = true)
+    private String failReason;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subscription_id")
     private Subscription subscription;
+
+    public static SubscriptionPayment create(String impUid, String merchantUid, BigDecimal amountExpected, BigDecimal amountPaid, PayStatus payStatus, LocalDateTime paidAt, Subscription subscription) {
+        return new SubscriptionPayment(
+                null,
+                impUid,
+                merchantUid,
+                amountExpected,
+                amountPaid,
+                PayStatus.PAID,
+                paidAt,
+                null,
+                subscription
+        );
+    }
+
+    public static SubscriptionPayment createFail(String merchantUid, BigDecimal amountExpected, String failReason, Subscription subscription) {
+        return new SubscriptionPayment(
+                null,
+                null,
+                merchantUid,
+                amountExpected,
+                null,
+                PayStatus.FAILED,
+                null,
+                failReason,
+                subscription
+        );
+    }
 
 }

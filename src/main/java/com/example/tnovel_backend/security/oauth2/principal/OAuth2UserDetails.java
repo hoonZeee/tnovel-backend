@@ -20,6 +20,7 @@ public class OAuth2UserDetails implements OAuth2User {
     private final Collection<? extends GrantedAuthority> authorities;
     private final Map<String, Object> attributes;
 
+
     @Override
     public String getName() {
         return username;

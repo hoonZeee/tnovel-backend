@@ -32,7 +32,12 @@ public class LocalCredential implements UserDetails {
     @JoinColumn(name = "auth_account_id", unique = true)
     private AuthAccount authAccount;
 
-    public static LocalCredential create(String password, AuthAccount authAccount){
+    public User getUser() {
+        return authAccount.getUser();
+    }
+
+
+    public static LocalCredential create(String password, AuthAccount authAccount) {
         return new LocalCredential(
                 null,
                 password,
@@ -43,9 +48,9 @@ public class LocalCredential implements UserDetails {
     }
 
     @PrePersist
-    protected void onCreate(){
+    protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        if(this.passwordUpdatedAt == null){
+        if (this.passwordUpdatedAt == null) {
             this.passwordUpdatedAt = this.createdAt;
         }
     }
@@ -53,21 +58,16 @@ public class LocalCredential implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_"+ authAccount.getUser().getRole().name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + authAccount.getUser().getRole().name()));
     }
 
     @Override
     public String getUsername() {
-        if(authAccount.getProvider()== Provider.LOCAL){
-            return authAccount.getUser().getPhoneNumberEncode();
-        }
-        else {
-            return authAccount.getProviderUserId();
-        }
+        return authAccount.getUser().getUsername();
     }
 
     @Override
-    public String getPassword(){
+    public String getPassword() {
         return password;
     }
 

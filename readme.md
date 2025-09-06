@@ -27,6 +27,7 @@
 - 카카오 로그인: 구현 완료 (API 호출 성공 및 DB 저장 정상 동작)
 - 로컬 회원가입 및 모든 소셜 로그인 시 JWT 토큰 발급 (username + role 기반)
 - swagger에서 카카오톡 로그인 api를 시행할 수 없기에 성공 이미지로 대체합니다.
+- 카카오 로그인 url : http://localhost:8080/oauth2/authorization/kakao
   ![로그인 성공 API](./docs/kakao-login.png)
 
 ---
@@ -74,3 +75,11 @@
     + 유저 벤하기 API 추가 완료
     + User 엔티티에 lastLoginAt 추가 후 어드민페이지에서 마지막 로그인 시간도 같이 조회 할수 있게 추가
     + 중복 검색..통합검색을 늦게 확인하여 단일 검색 실컷만들고 통합 검색도 구현.. 단일 검색은 아까워서 일단 놔둡니다 ㅠㅠ
+
+### 2025-09-05
+
+- 결제 관련 API 추가
+- prepare / verify / confirm 3단계로 구성
+- verify는 실제 결제가 이루어 질수 없는 점을 감안해서 코드 구현만 되어있고 API 테스트가 불가합니다.
+- 성공시 : prepare > verify > successConfirm
+- 실패시 : prepare > verify > failConfirm

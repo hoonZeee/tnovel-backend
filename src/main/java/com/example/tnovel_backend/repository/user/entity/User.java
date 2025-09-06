@@ -61,8 +61,8 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<PostReport> postReports = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<Subscription> subscriptions = new ArrayList<>();
+    @OneToOne(mappedBy = "user")
+    private Subscription subscription;
 
     public void ban() {
         this.status = Status.BANNED;
@@ -91,7 +91,7 @@ public class User {
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
-                new ArrayList<>()
+                null
         );
     }
 
@@ -114,7 +114,7 @@ public class User {
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
-                new ArrayList<>()
+                null
         );
     }
 
@@ -136,36 +136,7 @@ public class User {
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
-                new ArrayList<>()
-        );
-    }
-
-    @SuppressWarnings("unchecked")
-    public static User createFromKakao(Map<String, Object> kakaoUserInfo) {
-        String providerUserId = String.valueOf(kakaoUserInfo.get("id"));
-        Map<String, Object> account = (Map<String, Object>) kakaoUserInfo.get("kakao_account");
-        Map<String, Object> profile = (Map<String, Object>) account.get("profile");
-
-        String nickname = profile != null ? (String) profile.get("nickname") : null;
-
-        return new User(
-                null,
-                "KAKAO_" + providerUserId,
-                nickname,
-                null,
-                null,
-                null,
-                Role.USER,
-                Status.ACTIVE,
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                null,
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new ArrayList<>()
+                null
         );
     }
 
