@@ -17,6 +17,24 @@ public class PortOneService {
     private final PortOneConfig portOneConfig;
     private final RestTemplate restTemplate = new RestTemplate();
 
+    public void cancelPayment(String impUid, String reason) {
+        String token = getAccessToken();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> body = Map.of(
+                "imp_uid", impUid,
+                "reason", reason
+        );
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+        String url = portOneConfig.getBaseUrl() + "/payments/cancel";
+
+        restTemplate.postForEntity(url, request, String.class);
+    }
+
 
     public BigDecimal getPaymentAmount(String impUid) {
         String token = getAccessToken();

@@ -40,6 +40,24 @@ public class Subscription {
     private List<SubscriptionStatusHistory> subscriptionStatusHistories = new ArrayList<>();
 
 
+    public void postponeNextBillingDate() {
+        this.nextBillingDate = this.nextBillingDate.plusMonths(1);
+    }
+
+    public void cancel() {
+        this.canceledAt = LocalDateTime.now();
+        this.subscribeStatus = SubscribeStatus.CANCELED;
+        this.nextBillingDate = null;
+    }
+
+    public void fail() {
+        this.startedAt = null;
+        this.canceledAt = null;
+        this.subscribeStatus = SubscribeStatus.FAILED;
+        this.canceledAt = LocalDateTime.now();
+    }
+
+
     public static Subscription create(User user) {
         return new Subscription(
                 null,

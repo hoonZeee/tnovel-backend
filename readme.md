@@ -82,4 +82,6 @@
 - prepare / verify / confirm 3단계로 구성
 - verify는 실제 결제가 이루어 질수 없는 점을 감안해서 코드 구현만 되어있고 API 테스트가 불가합니다.
 - 성공시 : prepare > verify > successConfirm
-- 실패시 : prepare > verify > failConfirm
+- 실패시 : prepare > verify > failConfirm (실제 결제취소 API를 PortoneService에 구현해뒀지만, 실결제가 이루어질 수 없어 주석처리 하였습니다.)
+- 한시간마다 기대금액 = 실결제금액이 같은지 확인하는 스케쥴러 구현 완료
+- 매일 저녁 7시마다 구독만료일 정검및 만료 시 결제 스케쥴러 구현 완료

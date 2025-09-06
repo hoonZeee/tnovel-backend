@@ -1,6 +1,7 @@
 package com.example.tnovel_backend.controller.payment;
 
 import com.example.tnovel_backend.controller.payment.dto.request.ConfirmSubscribeRequestDto;
+import com.example.tnovel_backend.controller.payment.dto.response.CancelSubscribeResponseDto;
 import com.example.tnovel_backend.controller.payment.dto.response.ConfirmSubscribeResponseDto;
 import com.example.tnovel_backend.controller.payment.dto.response.PrepareSubscribeResponseDto;
 import com.example.tnovel_backend.controller.payment.dto.response.VerifySubscribeResponseDto;
@@ -63,6 +64,37 @@ public class SubscriptionController {
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
         ConfirmSubscribeResponseDto response = subscriptionService.confirmSubscribe(dto, user);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "결제 실패 확정", description = "결제 실패 내용을 서버에 반영하여 저장합니다.")
+    @PostMapping("/confirm/fail")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<ConfirmSubscribeResponseDto> confirmSubscribeFail(
+            @RequestBody ConfirmSubscribeRequestDto dto,
+            @RequestParam("reason") String reason,
+            Authentication authentication
+    ) {
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        ConfirmSubscribeResponseDto response = subscriptionService.confirmSubscribeFail(dto, user, reason);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "구독 취소", description = "현재 사용자의 구독을 취소합니다.")
+    @PostMapping("/cancel")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<CancelSubscribeResponseDto> cancelSubscribe(
+            @RequestParam(required = false, defaultValue = "사용자 요청") String reason,
+            Authentication authentication
+    ) {
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        CancelSubscribeResponseDto response = subscriptionService.cancelSubscribe(user, reason);
         return ResponseEntity.ok(response);
     }
 }
