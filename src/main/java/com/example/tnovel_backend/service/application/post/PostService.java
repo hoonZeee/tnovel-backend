@@ -2,6 +2,7 @@ package com.example.tnovel_backend.service.application.post;
 
 import com.example.tnovel_backend.controller.post.dto.request.PostCreateRequestDto;
 import com.example.tnovel_backend.controller.post.dto.request.PostMediaCreateDto;
+import com.example.tnovel_backend.controller.post.dto.response.PostReportResponseDto;
 import com.example.tnovel_backend.controller.post.dto.response.PostSimpleResponseDto;
 import com.example.tnovel_backend.exception.domain.PostException;
 import com.example.tnovel_backend.exception.domain.UserException;
@@ -12,6 +13,9 @@ import com.example.tnovel_backend.repository.post.PostReportRepository;
 import com.example.tnovel_backend.repository.post.PostRepository;
 import com.example.tnovel_backend.repository.post.entity.Post;
 import com.example.tnovel_backend.repository.post.entity.PostMedia;
+import com.example.tnovel_backend.repository.post.entity.PostReport;
+import com.example.tnovel_backend.repository.post.entity.vo.ReportReason;
+import com.example.tnovel_backend.repository.post.entity.vo.VisibleStatus;
 import com.example.tnovel_backend.repository.user.UserRepository;
 import com.example.tnovel_backend.repository.user.entity.User;
 import com.example.tnovel_backend.service.domain.post.ImageUtil;
@@ -72,6 +76,31 @@ public class PostService {
 
         post.delete();
         return PostSimpleResponseDto.from(post);
+    }
+
+    @Transactional
+    public PostReportResponseDto reportPost(Integer postId, ReportReason reason, String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostException(PostErrorCode.POST_NOT_FOUND));
+
+        //중복 신고 방어 로직
+        if (postReportRepository.existsByUserIdAndPostId(user.getId(), postId)) {
+            throw new PostException(PostErrorCode.DUPLICATE_REPORT);
+        }
+
+        PostReport report = PostReport.create(reason, user, post);
+        postReportRepository.save(report);
+
+        //누적 신고가 10회 이상이면 INVISIBLE 로 업데이트 하는 로직
+        long reportCount = postReportRepository.countByPostId(postId);
+        if (reportCount >= 10 && post.getVisibleStatus() == VisibleStatus.VISIBLE) {
+            post.setInvisible();
+        }
+
+        return PostReportResponseDto.from(report);
     }
 
 

@@ -62,6 +62,11 @@ public class Post {
         );
     }
 
+    public void setInvisible() {
+        this.visibleStatus = VisibleStatus.INVISIBLE;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public void addMedia(PostMedia media) {
         this.postMedias.add(media);
     }

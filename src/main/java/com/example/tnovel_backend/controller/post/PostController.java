@@ -1,6 +1,8 @@
 package com.example.tnovel_backend.controller.post;
 
 import com.example.tnovel_backend.controller.post.dto.request.PostCreateRequestDto;
+import com.example.tnovel_backend.controller.post.dto.request.PostReportRequestDto;
+import com.example.tnovel_backend.controller.post.dto.response.PostReportResponseDto;
 import com.example.tnovel_backend.controller.post.dto.response.PostSimpleResponseDto;
 import com.example.tnovel_backend.exception.domain.PostException;
 import com.example.tnovel_backend.exception.error.PostErrorCode;
@@ -57,7 +59,7 @@ public class PostController {
     }
 
     @Operation(summary = "게시글 삭제", description = "자신이 작성한 게시글 삭제. 소프트 딜리트")
-    @PatchMapping("/posts/{postId}")
+    @DeleteMapping("/posts/{postId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<PostSimpleResponseDto> deletePost(
             @Parameter(example = "1")
@@ -66,6 +68,23 @@ public class PostController {
     ) {
         String username = authentication.getName();
         PostSimpleResponseDto response = postService.deletePost(postId, username);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "게시물 신고", description = "특정 게시물 신고 (10회 이상 신고 누적시 INVISIBLE 로 POST 업데이트")
+    @PostMapping("/posts/{postId}/report")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<PostReportResponseDto> reportPost(
+            @Parameter(example = "1") @PathVariable Integer postId,
+            @Valid @RequestBody PostReportRequestDto request,
+            Authentication authentication
+    ) {
+        String username = authentication.getName();
+        PostReportResponseDto response = postService.reportPost(
+                postId,
+                request.getReportReason(),
+                username
+        );
         return ResponseEntity.ok(response);
     }
 
