@@ -1,5 +1,6 @@
 package com.example.tnovel_backend.repository.post.entity;
 
+import com.example.tnovel_backend.repository.post.entity.vo.ReportReason;
 import com.example.tnovel_backend.repository.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -18,7 +19,8 @@ public class PostReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String reason;
+    @Enumerated(EnumType.STRING)
+    private ReportReason reportReason;
 
     private LocalDateTime createdAt;
 
@@ -30,10 +32,10 @@ public class PostReport {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    public static PostReport create(String reason, User user, Post post) {
+    public static PostReport create(ReportReason reportReason, User user, Post post) {
         return new PostReport(
                 null,
-                reason,
+                reportReason,
                 LocalDateTime.now(),
                 user,
                 post

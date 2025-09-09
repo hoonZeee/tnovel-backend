@@ -14,6 +14,7 @@ public enum UserErrorCode implements ErrorCode {
     FORBIDDEN(HttpStatus.FORBIDDEN, "권한이 없습니다."),
     ALREADY_IN_STATUS(HttpStatus.BAD_REQUEST, "이미 해당 상태입니다.");
 
+
     private final HttpStatus status;
 
     @Getter

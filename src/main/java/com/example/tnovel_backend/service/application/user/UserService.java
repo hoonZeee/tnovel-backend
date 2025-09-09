@@ -5,6 +5,7 @@ import com.example.tnovel_backend.controller.user.dto.request.LocalLoginRequestD
 import com.example.tnovel_backend.controller.user.dto.request.LocalSignUpRequestDto;
 import com.example.tnovel_backend.controller.user.dto.response.LoginResponseDto;
 import com.example.tnovel_backend.controller.user.dto.response.SignUpResponseDto;
+import com.example.tnovel_backend.controller.user.dto.response.UserSimpleResponseDto;
 import com.example.tnovel_backend.exception.domain.UserException;
 import com.example.tnovel_backend.exception.error.UserErrorCode;
 import com.example.tnovel_backend.repository.user.AuthAccountRepository;
@@ -42,6 +43,25 @@ public class UserService implements UserDetailsService {
     private final PhoneEncryptor phoneEncryptor;
     private final JwtProvider jwtProvider;
     private final UserConsentRepository userConsentRepository;
+
+    @Transactional
+    public UserSimpleResponseDto makeDormant(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        user.dormant();
+        userRepository.save(user);
+        return UserSimpleResponseDto.from(user);
+    }
+
+    @Transactional
+    public UserSimpleResponseDto withdraw(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        user.withdraw();
+        userRepository.save(user);
+        return UserSimpleResponseDto.from(user);
+    }
+
 
     @Transactional
     public LoginResponseDto loginLocal(LocalLoginRequestDto request) {

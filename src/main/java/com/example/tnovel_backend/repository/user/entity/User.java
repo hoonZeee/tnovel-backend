@@ -14,7 +14,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Entity
@@ -71,6 +70,16 @@ public class User {
 
     public void updateLastLoginAt(LocalDateTime time) {
         this.lastLoginAt = time;
+    }
+
+    public void dormant() {
+        this.status = Status.DORMANT;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void withdraw() {
+        this.status = Status.WITHDRAWN;
+        this.updatedAt = LocalDateTime.now();
     }
 
     public static User create(String username, String name, String phoneNumberEncode, LocalDate birthDate) {

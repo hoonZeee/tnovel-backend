@@ -37,9 +37,12 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain jwtFilterChain(HttpSecurity http,
                                               AuthenticationManager authenticationManager) throws Exception {
-        http.securityMatcher("/signup", "/auth/**", "/api/**") // JWT
+        http.securityMatcher("/signup", "/auth/**", "/api/**", "/users/**") // JWT
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/users/signup", "/auth/**").permitAll()
+                        .anyRequest().authenticated()
+                )
                 .addFilterAt(new JwtAuthorizationFilter(authenticationManager, jwtProvider),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtAuthenticationFilter(authenticationManager(http)),
@@ -61,7 +64,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception{
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
 
