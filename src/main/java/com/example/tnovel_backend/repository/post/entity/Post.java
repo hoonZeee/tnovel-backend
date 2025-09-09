@@ -39,7 +39,7 @@ public class Post {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostMedia> postMedias = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
@@ -60,6 +60,10 @@ public class Post {
                 new ArrayList<>()
 
         );
+    }
+
+    public void addMedia(PostMedia media) {
+        this.postMedias.add(media);
     }
 
 }

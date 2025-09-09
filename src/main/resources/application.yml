@@ -49,6 +49,8 @@ portone:
     api-key: ${PORTONE_REST_API_KEY}
     api-secret: ${PORTONE_REST_API_SECRET}
 
+file:
+  upload-dir: src/main/resources/static/uploads/posts
 
 
 logging:

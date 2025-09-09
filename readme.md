@@ -84,12 +84,23 @@
 - 성공시 : prepare > verify > successConfirm
 - 실패시 : prepare > verify > failConfirm (실제 결제취소 API를 PortoneService에 구현해뒀지만, 실결제가 이루어질 수 없어 주석처리 하였습니다.)
 
-
 ### 2025-09-06
+
 - 한시간마다 기대금액 = 실결제금액이 같은지 확인하는 스케쥴러 구현 완료
 - 매일 저녁 7시마다 구독만료일 정검및 만료 시 결제 스케쥴러 구현 완료
 - 구독관련 어드민 API 완성 (최근 날짜 순으로 전체 구독 상태 조회, 각 조건에 맞는 통합 조회 API 구현)
 
-
 ### 2025-09-07
+
 - ERD 수정본 업데이트
+
+### 2025-09-09
+
+- 게시물 관련 로직 추가
+- Swagger 검증 및 테스트 편의를 위해 @RequestBody 기반 JSON 형식으로 게시글 등록을 구현함.
+- 실제 운영 환경에서는 @ModelAttribute 기반의 MultipartFile 업로드 방식으로 확장 가능하도록 설계되어 있으며, 해당 코드는 주석 처리로 보존되어 있음.
+- 각 미디어 파일의 URL과 타입(IMAGE, VIDEO 등)을 함께 받도록 DTO를 설계하여 유연한 확장성 확보.
+- 첨부파일 저장 및 URL 생성 로직은 service > domain > ImageUtils 유틸 클래스에 구현함.
+- 게시물 post 입력 예시
+-
+```{ "title": "뉴욕", "content": "항상 꿈에 그리던곳 상상 그 이상이다.", "mediaList": [ { "url": "https://cdn.example.com/images/A.jpg", "mediaType": "IMAGE" }, { "url": "https://cdn.example.com/images/B.jpg", "mediaType": "IMAGE" }, { "url": "https://cdn.example.com/videos/C.mp4", "mediaType": "VIDEO" } ] } ```

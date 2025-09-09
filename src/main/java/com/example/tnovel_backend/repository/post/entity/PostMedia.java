@@ -1,5 +1,6 @@
 package com.example.tnovel_backend.repository.post.entity;
 
+import com.example.tnovel_backend.repository.post.entity.vo.MediaType;
 import com.example.tnovel_backend.repository.post.entity.vo.VisibleStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -19,8 +20,8 @@ public class PostMedia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Enumerated
-    private VisibleStatus visibleStatus;
+    @Enumerated(EnumType.STRING)
+    private MediaType mediaType;
 
     private String imageUrl;
 
@@ -29,10 +30,10 @@ public class PostMedia {
     @ManyToOne(fetch = FetchType.LAZY)
     private Post post;
 
-    public static PostMedia create(String imageUrl, Post post) {
+    public static PostMedia create(String imageUrl, MediaType type, Post post) {
         return new PostMedia(
                 null,
-                VisibleStatus.VISIBLE,
+                type,
                 imageUrl,
                 LocalDateTime.now(),
                 post

@@ -20,7 +20,7 @@ import org.springframework.security.core.Authentication;
 
 @Tag(name = "포트원결제", description = "구독 관련 API")
 @RestController
-@RequestMapping("/api/v1/subscribe")
+@RequestMapping("/api/subscribe")
 @RequiredArgsConstructor
 public class SubscriptionController {
 
