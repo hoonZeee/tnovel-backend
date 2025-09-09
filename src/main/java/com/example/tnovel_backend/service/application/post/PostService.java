@@ -16,9 +16,11 @@ import com.example.tnovel_backend.repository.user.UserRepository;
 import com.example.tnovel_backend.repository.user.entity.User;
 import com.example.tnovel_backend.service.domain.post.ImageUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
+// import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -30,7 +32,13 @@ public class PostService {
     private final PostMediaRepository postMediaRepository;
     private final PostReportRepository postReportRepository;
     private final UserRepository userRepository;
-    private final ImageUtil imageUtil;
+    //private final ImageUtil imageUtil;
+
+    @Transactional(readOnly = true)
+    public Page<PostSimpleResponseDto> getAllPosts(Pageable pageable) {
+        return postRepository.findAll(pageable)
+                .map(PostSimpleResponseDto::from);
+    }
 
     @Transactional
     public PostSimpleResponseDto createPost(PostCreateRequestDto dto, String username) {
@@ -50,6 +58,19 @@ public class PostService {
             post.addMedia(media);
         }
 
+        return PostSimpleResponseDto.from(post);
+    }
+
+    @Transactional
+    public PostSimpleResponseDto deletePost(Integer postId, String username) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostException(PostErrorCode.POST_NOT_FOUND));
+
+        if (!post.getUser().getUsername().equals(username)) {
+            throw new PostException(PostErrorCode.UNAUTHORIZED_POST_ACCESS);
+        }
+
+        post.delete();
         return PostSimpleResponseDto.from(post);
     }
 

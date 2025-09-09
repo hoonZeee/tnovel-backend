@@ -66,4 +66,9 @@ public class Post {
         this.postMedias.add(media);
     }
 
+    public void delete() {
+        this.visibleStatus = VisibleStatus.DELETE;
+        this.updatedAt = LocalDateTime.now();
+    }
+
 }

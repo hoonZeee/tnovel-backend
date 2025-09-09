@@ -2,11 +2,18 @@ package com.example.tnovel_backend.controller.post;
 
 import com.example.tnovel_backend.controller.post.dto.request.PostCreateRequestDto;
 import com.example.tnovel_backend.controller.post.dto.response.PostSimpleResponseDto;
+import com.example.tnovel_backend.exception.domain.PostException;
+import com.example.tnovel_backend.exception.error.PostErrorCode;
 import com.example.tnovel_backend.service.application.post.PostService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,6 +37,35 @@ public class PostController {
     ) {
         String username = authentication.getName();
         PostSimpleResponseDto response = postService.createPost(request, username);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "피드 전체 조회", description = "pageIndex, size는 필수입니다.")
+    @GetMapping("/posts")
+    public ResponseEntity<Page<PostSimpleResponseDto>> getPosts(
+            @RequestParam(name = "pageIndex") Integer pageIndex,
+            @RequestParam(name = "size") Integer size
+    ) {
+
+        if (pageIndex < 0 || size <= 0) {
+            throw new PostException(PostErrorCode.INVALID_PAGINATION_PARAMETER);
+        }
+
+        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<PostSimpleResponseDto> posts = postService.getAllPosts(pageable);
+        return ResponseEntity.ok(posts);
+    }
+
+    @Operation(summary = "게시글 삭제", description = "자신이 작성한 게시글 삭제. 소프트 딜리트")
+    @PatchMapping("/posts/{postId}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<PostSimpleResponseDto> deletePost(
+            @Parameter(example = "1")
+            @PathVariable Integer postId,
+            Authentication authentication
+    ) {
+        String username = authentication.getName();
+        PostSimpleResponseDto response = postService.deletePost(postId, username);
         return ResponseEntity.ok(response);
     }
 

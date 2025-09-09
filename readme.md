@@ -101,6 +101,7 @@
 - 실제 운영 환경에서는 @ModelAttribute 기반의 MultipartFile 업로드 방식으로 확장 가능하도록 설계되어 있으며, 해당 코드는 주석 처리로 보존되어 있음.
 - 각 미디어 파일의 URL과 타입(IMAGE, VIDEO 등)을 함께 받도록 DTO를 설계하여 유연한 확장성 확보.
 - 첨부파일 저장 및 URL 생성 로직은 service > domain > ImageUtils 유틸 클래스에 구현함.
-- 게시물 post 입력 예시
--
-```{ "title": "뉴욕", "content": "항상 꿈에 그리던곳 상상 그 이상이다.", "mediaList": [ { "url": "https://cdn.example.com/images/A.jpg", "mediaType": "IMAGE" }, { "url": "https://cdn.example.com/images/B.jpg", "mediaType": "IMAGE" }, { "url": "https://cdn.example.com/videos/C.mp4", "mediaType": "VIDEO" } ] } ```
+- 댓글 작성 API 구현
+- 게시물 클릭시 댓글이 최신순으로 10개씩 조회되는 API 구현
+- 게시글 삭제 API 구현
+   
