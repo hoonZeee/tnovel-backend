@@ -3,12 +3,16 @@ package com.example.tnovel_backend.service.application.admin;
 import com.example.tnovel_backend.controller.admin.dto.request.PostSearchRequestDto;
 import com.example.tnovel_backend.controller.admin.dto.response.AdminPostReportResponseDto;
 import com.example.tnovel_backend.controller.admin.dto.response.PostSearchResponseDto;
+import com.example.tnovel_backend.controller.admin.dto.response.history.CommentHistoryResponseDto;
+import com.example.tnovel_backend.controller.admin.dto.response.history.PostHistoryResponseDto;
+import com.example.tnovel_backend.controller.admin.dto.response.history.PostReportHistoryResponseDto;
 import com.example.tnovel_backend.exception.domain.PostException;
 import com.example.tnovel_backend.exception.error.PostErrorCode;
-import com.example.tnovel_backend.repository.post.PostReportRepository;
-import com.example.tnovel_backend.repository.post.PostRepository;
+import com.example.tnovel_backend.repository.post.*;
 import com.example.tnovel_backend.repository.post.entity.Post;
+import com.example.tnovel_backend.repository.post.entity.PostHistory;
 import com.example.tnovel_backend.repository.post.entity.PostReport;
+import com.example.tnovel_backend.repository.post.entity.PostReportHistory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +25,10 @@ public class PostAdminService {
 
     private final PostRepository postRepository;
     private final PostReportRepository postReportRepository;
+    private final PostHistoryRepository postHistoryRepository;
+    private final CommentHistoryRepository commentHistoryRepository;
+    private final PostReportHistoryRepository postReportHistoryRepository;
+
 
     @Transactional(readOnly = true)
     public Page<AdminPostReportResponseDto> getAllReports(Pageable pageable) {
@@ -33,6 +41,15 @@ public class PostAdminService {
         PostReport report = postReportRepository.findById(reportId)
                 .orElseThrow(() -> new PostException(PostErrorCode.REPORT_NOT_FOUND));
         postReportRepository.delete(report);
+        postReportHistoryRepository.save(
+                PostReportHistory.create(
+                        report.getId(),
+                        report.getUser().
+                                getUsername(),
+                        report.getPost().getId(),
+                        "DELETE"
+                )
+        );
     }
 
     @Transactional
@@ -41,6 +58,9 @@ public class PostAdminService {
                 .orElseThrow(() -> new PostException(PostErrorCode.REPORT_NOT_FOUND));
         Post post = report.getPost();
         post.setInvisible();
+        postHistoryRepository.save(
+                PostHistory.create(post.getId(), post.getUser().getUsername(), "INVISIBLE")
+        );
     }
 
 
@@ -52,5 +72,23 @@ public class PostAdminService {
     public Page<PostSearchResponseDto> searchPosts(PostSearchRequestDto request, Pageable pageable) {
         return postRepository.searchPost(request, pageable)
                 .map(PostSearchResponseDto::from);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PostHistoryResponseDto> getPostHistories(Pageable pageable) {
+        return postHistoryRepository.findAllByOrderByCreatedAtDesc(pageable)
+                .map(PostHistoryResponseDto::from);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CommentHistoryResponseDto> getCommentHistories(Pageable pageable) {
+        return commentHistoryRepository.findAllByOrderByCreatedAtDesc(pageable)
+                .map(CommentHistoryResponseDto::from);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PostReportHistoryResponseDto> getPostReportHistories(Pageable pageable) {
+        return postReportHistoryRepository.findAllByOrderByCreatedAtDesc(pageable)
+                .map(PostReportHistoryResponseDto::from);
     }
 }

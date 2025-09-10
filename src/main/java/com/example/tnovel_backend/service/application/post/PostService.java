@@ -8,12 +8,8 @@ import com.example.tnovel_backend.exception.domain.PostException;
 import com.example.tnovel_backend.exception.domain.UserException;
 import com.example.tnovel_backend.exception.error.PostErrorCode;
 import com.example.tnovel_backend.exception.error.UserErrorCode;
-import com.example.tnovel_backend.repository.post.PostMediaRepository;
-import com.example.tnovel_backend.repository.post.PostReportRepository;
-import com.example.tnovel_backend.repository.post.PostRepository;
-import com.example.tnovel_backend.repository.post.entity.Post;
-import com.example.tnovel_backend.repository.post.entity.PostMedia;
-import com.example.tnovel_backend.repository.post.entity.PostReport;
+import com.example.tnovel_backend.repository.post.*;
+import com.example.tnovel_backend.repository.post.entity.*;
 import com.example.tnovel_backend.repository.post.entity.vo.ReportReason;
 import com.example.tnovel_backend.repository.post.entity.vo.VisibleStatus;
 import com.example.tnovel_backend.repository.user.UserRepository;
@@ -37,6 +33,8 @@ public class PostService {
     private final PostReportRepository postReportRepository;
     private final UserRepository userRepository;
     //private final ImageUtil imageUtil;
+    private final PostHistoryRepository postHistoryRepository;
+    private final PostReportHistoryRepository postReportHistoryRepository;
 
     @Transactional(readOnly = true)
     public Page<PostSimpleResponseDto> getAllPosts(Pageable pageable) {
@@ -61,6 +59,7 @@ public class PostService {
             postMediaRepository.save(media);
             post.addMedia(media);
         }
+        postHistoryRepository.save(PostHistory.create(post.getId(), user.getUsername(), "CREATE"));
 
         return PostSimpleResponseDto.from(post);
     }
@@ -75,6 +74,9 @@ public class PostService {
         }
 
         post.delete();
+
+        postHistoryRepository.save(PostHistory.create(post.getId(), username, "DELETE"));
+
         return PostSimpleResponseDto.from(post);
     }
 
@@ -99,6 +101,10 @@ public class PostService {
         if (reportCount >= 10 && post.getVisibleStatus() == VisibleStatus.VISIBLE) {
             post.setInvisible();
         }
+
+        postReportHistoryRepository.save(
+                PostReportHistory.create(report.getId(), user.getUsername(), post.getId(), "REPORT")
+        );
 
         return PostReportResponseDto.from(report);
     }

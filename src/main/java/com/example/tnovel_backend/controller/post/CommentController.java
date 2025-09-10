@@ -38,6 +38,19 @@ public class CommentController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "댓글 삭제", description = "자신이 작성한 댓글을 삭제합니다. (하드 딜리트)")
+    @DeleteMapping("/{commentId}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<Void> deleteComment(
+            @Parameter(example = "1")
+            @PathVariable Integer commentId,
+            Authentication authentication
+    ) {
+        String username = authentication.getName();
+        commentService.deleteComment(commentId, username);
+        return ResponseEntity.noContent().build();
+    }
+
     @Operation(summary = "게시글의 댓글 목록 조회", description = "댓글 최신순으로 10개씩 조회")
     @GetMapping("/posts/{postId}/comments")
     public ResponseEntity<Page<CommentSimpleResponseDto>> getCommentByPost(

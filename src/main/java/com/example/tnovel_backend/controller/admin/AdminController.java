@@ -8,7 +8,7 @@ import com.example.tnovel_backend.controller.user.dto.response.LoginResponseDto;
 import com.example.tnovel_backend.controller.user.dto.response.SignUpResponseDto;
 import com.example.tnovel_backend.controller.user.dto.response.UserSimpleResponseDto;
 import com.example.tnovel_backend.repository.user.entity.vo.Status;
-import com.example.tnovel_backend.service.application.admin.AdminService;
+import com.example.tnovel_backend.service.application.admin.UserAdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,19 +32,19 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class AdminController {
 
-    private final AdminService adminService;
+    private final UserAdminService userAdminService;
 
     @Operation(summary = "어드민 회원가입", description = "어드민 계정 생성 API")
     @PostMapping("/signup")
     public ResponseEntity<SignUpResponseDto> signupAdmin(@RequestBody @Valid AdminSignUpRequestDto request) {
-        SignUpResponseDto response = adminService.signupAdmin(request);
+        SignUpResponseDto response = userAdminService.signupAdmin(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(summary = "어드민 로그인", description = "어드민 아이디 기반 로그인 API")
     @PostMapping("/login")
     public LoginResponseDto loginAdmin(@RequestBody @Valid AdminLoginRequestDto request) {
-        return adminService.loginAdmin(request);
+        return userAdminService.loginAdmin(request);
     }
 
     @Operation(summary = "유저 전체 조회 (페이지네이션)", description = "어드민 accessToken을 기반으로 전체 유저를 최신순 조회")
@@ -55,7 +55,7 @@ public class AdminController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<UserSimpleResponseDto> users = adminService.getAllUsersOrderByCreatedAtDesc(pageable);
+        Page<UserSimpleResponseDto> users = userAdminService.getAllUsersOrderByCreatedAtDesc(pageable);
         return ResponseEntity.ok(users);
     }
 
@@ -68,7 +68,7 @@ public class AdminController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<UserSimpleResponseDto> created = adminService.searchByUsername(keyword, pageable);
+        Page<UserSimpleResponseDto> created = userAdminService.searchByUsername(keyword, pageable);
         return ResponseEntity.ok(created);
     }
 
@@ -81,7 +81,7 @@ public class AdminController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<UserSimpleResponseDto> created = adminService.searchByName(keyword, pageable);
+        Page<UserSimpleResponseDto> created = userAdminService.searchByName(keyword, pageable);
         return ResponseEntity.ok(created);
     }
 
@@ -94,7 +94,7 @@ public class AdminController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<UserSimpleResponseDto> created = adminService.searchByCreatedAt(date, pageable);
+        Page<UserSimpleResponseDto> created = userAdminService.searchByCreatedAt(date, pageable);
         return ResponseEntity.ok(created);
     }
 
@@ -107,7 +107,7 @@ public class AdminController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<UserSimpleResponseDto> created = adminService.searchByStatus(status, pageable);
+        Page<UserSimpleResponseDto> created = userAdminService.searchByStatus(status, pageable);
         return ResponseEntity.ok(created);
     }
 
@@ -118,7 +118,7 @@ public class AdminController {
             @PathVariable Integer userId,
             @RequestBody @Valid UpdateUserStateRequestDto request
     ) {
-        UserSimpleResponseDto updated = adminService.updateUserStatus(userId, request.getStatus());
+        UserSimpleResponseDto updated = userAdminService.updateUserStatus(userId, request.getStatus());
         return ResponseEntity.ok(updated);
     }
 
@@ -132,7 +132,7 @@ public class AdminController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<UserSimpleResponseDto> result = adminService.searchUsers(request, pageable);
+        Page<UserSimpleResponseDto> result = userAdminService.searchUsers(request, pageable);
         return ResponseEntity.ok(result);
     }
 

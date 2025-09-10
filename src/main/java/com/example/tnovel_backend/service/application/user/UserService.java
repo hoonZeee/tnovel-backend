@@ -8,14 +8,8 @@ import com.example.tnovel_backend.controller.user.dto.response.SignUpResponseDto
 import com.example.tnovel_backend.controller.user.dto.response.UserSimpleResponseDto;
 import com.example.tnovel_backend.exception.domain.UserException;
 import com.example.tnovel_backend.exception.error.UserErrorCode;
-import com.example.tnovel_backend.repository.user.AuthAccountRepository;
-import com.example.tnovel_backend.repository.user.LocalCredentialRepository;
-import com.example.tnovel_backend.repository.user.UserConsentRepository;
-import com.example.tnovel_backend.repository.user.UserRepository;
-import com.example.tnovel_backend.repository.user.entity.AuthAccount;
-import com.example.tnovel_backend.repository.user.entity.LocalCredential;
-import com.example.tnovel_backend.repository.user.entity.User;
-import com.example.tnovel_backend.repository.user.entity.UserConsent;
+import com.example.tnovel_backend.repository.user.*;
+import com.example.tnovel_backend.repository.user.entity.*;
 import com.example.tnovel_backend.repository.user.entity.vo.Provider;
 import com.example.tnovel_backend.repository.user.entity.vo.Status;
 import com.example.tnovel_backend.security.jwt.JwtProvider;
@@ -43,6 +37,7 @@ public class UserService implements UserDetailsService {
     private final PhoneEncryptor phoneEncryptor;
     private final JwtProvider jwtProvider;
     private final UserConsentRepository userConsentRepository;
+    private final UserHistoryRepository userHistoryRepository;
 
     @Transactional
     public UserSimpleResponseDto makeDormant(Integer userId) {
@@ -50,6 +45,14 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
         user.dormant();
         userRepository.save(user);
+
+        userHistoryRepository.save(
+                UserHistory.create(
+                        user.getId(),
+                        user.getUsername(),
+                        "DORMANT"
+                )
+        );
         return UserSimpleResponseDto.from(user);
     }
 
@@ -59,6 +62,14 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
         user.withdraw();
         userRepository.save(user);
+
+        userHistoryRepository.save(
+                UserHistory.create(
+                        user.getId(),
+                        user.getUsername(),
+                        "WITHDRAW"
+                )
+        );
         return UserSimpleResponseDto.from(user);
     }
 
@@ -92,6 +103,14 @@ public class UserService implements UserDetailsService {
 
         user.updateLastLoginAt(LocalDateTime.now());
         userRepository.save(user);
+
+        userHistoryRepository.save(
+                UserHistory.create(
+                        user.getId(),
+                        user.getUsername(),
+                        "LOGIN"
+                )
+        );
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(credential, null, credential.getAuthorities());
         String accessToken = jwtProvider.generate(authentication);
@@ -140,6 +159,14 @@ public class UserService implements UserDetailsService {
                     .toList();
             userConsentRepository.saveAll(consents);
         }
+
+        userHistoryRepository.save(
+                UserHistory.create(
+                        user.getId(),
+                        user.getUsername(),
+                        "SIGNUP"
+                )
+        );
 
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(credential, null, credential.getAuthorities());

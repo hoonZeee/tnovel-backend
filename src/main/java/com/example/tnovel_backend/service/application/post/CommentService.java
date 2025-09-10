@@ -6,9 +6,11 @@ import com.example.tnovel_backend.exception.domain.PostException;
 import com.example.tnovel_backend.exception.domain.UserException;
 import com.example.tnovel_backend.exception.error.PostErrorCode;
 import com.example.tnovel_backend.exception.error.UserErrorCode;
+import com.example.tnovel_backend.repository.post.CommentHistoryRepository;
 import com.example.tnovel_backend.repository.post.CommentRepository;
 import com.example.tnovel_backend.repository.post.PostRepository;
 import com.example.tnovel_backend.repository.post.entity.Comment;
+import com.example.tnovel_backend.repository.post.entity.CommentHistory;
 import com.example.tnovel_backend.repository.post.entity.Post;
 import com.example.tnovel_backend.repository.user.UserRepository;
 import com.example.tnovel_backend.repository.user.entity.User;
@@ -25,6 +27,7 @@ public class CommentService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final CommentHistoryRepository commentHistoryRepository;
 
 
     @Transactional(readOnly = true)
@@ -53,6 +56,25 @@ public class CommentService {
 
         commentRepository.save(comment);
 
+        commentHistoryRepository.save(CommentHistory.create(comment.getId(), user.getUsername(), "CREATE"));
+
         return CommentSimpleResponseDto.from(comment);
     }
+
+    @Transactional
+    public void deleteComment(Integer commentId, String username) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new PostException(PostErrorCode.COMMENT_NOT_FOUND));
+
+        if (!comment.getUser().getUsername().equals(username)) {
+            throw new PostException(PostErrorCode.UNAUTHORIZED_POST_ACCESS);
+        }
+
+        commentRepository.delete(comment);
+
+        commentHistoryRepository.save(
+                CommentHistory.create(comment.getId(), username, "DELETE")
+        );
+    }
+
 }

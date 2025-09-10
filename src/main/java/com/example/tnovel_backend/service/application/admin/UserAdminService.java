@@ -4,6 +4,7 @@ import com.example.tnovel_backend.configuration.PhoneEncryptor;
 import com.example.tnovel_backend.controller.admin.dto.request.AdminLoginRequestDto;
 import com.example.tnovel_backend.controller.admin.dto.request.AdminSignUpRequestDto;
 import com.example.tnovel_backend.controller.admin.dto.request.UserTotalSearchRequest;
+import com.example.tnovel_backend.controller.admin.dto.response.history.UserHistoryResponseDto;
 import com.example.tnovel_backend.controller.user.dto.response.LoginResponseDto;
 import com.example.tnovel_backend.controller.user.dto.response.SignUpResponseDto;
 import com.example.tnovel_backend.controller.user.dto.response.UserSimpleResponseDto;
@@ -11,10 +12,12 @@ import com.example.tnovel_backend.exception.domain.UserException;
 import com.example.tnovel_backend.exception.error.UserErrorCode;
 import com.example.tnovel_backend.repository.user.AuthAccountRepository;
 import com.example.tnovel_backend.repository.user.LocalCredentialRepository;
+import com.example.tnovel_backend.repository.user.UserHistoryRepository;
 import com.example.tnovel_backend.repository.user.UserRepository;
 import com.example.tnovel_backend.repository.user.entity.AuthAccount;
 import com.example.tnovel_backend.repository.user.entity.LocalCredential;
 import com.example.tnovel_backend.repository.user.entity.User;
+import com.example.tnovel_backend.repository.user.entity.UserHistory;
 import com.example.tnovel_backend.repository.user.entity.vo.Provider;
 import com.example.tnovel_backend.repository.user.entity.vo.Role;
 import com.example.tnovel_backend.repository.user.entity.vo.Status;
@@ -33,7 +36,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class AdminService {
+public class UserAdminService {
 
     private final UserRepository userRepository;
     private final AuthAccountRepository authAccountRepository;
@@ -41,6 +44,13 @@ public class AdminService {
     private final PasswordEncoder passwordEncoder;
     private final PhoneEncryptor phoneEncryptor;
     private final JwtProvider jwtProvider;
+    private final UserHistoryRepository userHistoryRepository;
+
+    @Transactional(readOnly = true)
+    public Page<UserHistoryResponseDto> getUserHistories(Pageable pageable) {
+        return userHistoryRepository.findAllByOrderByCreatedAtDesc(pageable)
+                .map(UserHistoryResponseDto::from);
+    }
 
 
     @Transactional(readOnly = true)
@@ -59,6 +69,14 @@ public class AdminService {
         }
 
         user.ban();
+
+        userHistoryRepository.save(
+                UserHistory.create(
+                        user.getId(),
+                        user.getUsername(),
+                        "BAN"
+                )
+        );
 
         return UserSimpleResponseDto.from(user);
     }

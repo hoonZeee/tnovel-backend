@@ -11,7 +11,8 @@ public enum PostErrorCode implements ErrorCode {
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시물을 찾을 수 없습니다."),
     UNAUTHORIZED_POST_ACCESS(HttpStatus.FORBIDDEN, "해당 게시글의 권한이 없습니다."),
     DUPLICATE_REPORT(HttpStatus.BAD_REQUEST, "이미 신고한 게시물입니다."),
-    REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 신고를 찾을 수 없습니다.");
+    REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 신고를 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 댓글을 찾을 수 없습니다.");
 
 
     private final HttpStatus status;

@@ -10,10 +10,12 @@ import com.example.tnovel_backend.exception.domain.SubscriptionException;
 import com.example.tnovel_backend.exception.domain.UserException;
 import com.example.tnovel_backend.exception.error.SubscriptionErrorCode;
 import com.example.tnovel_backend.exception.error.UserErrorCode;
+import com.example.tnovel_backend.repository.payment.SubscriptionHistoryRepository;
 import com.example.tnovel_backend.repository.payment.SubscriptionPaymentRepository;
 import com.example.tnovel_backend.repository.payment.SubscriptionRepository;
 import com.example.tnovel_backend.repository.payment.SubscriptionStatusHistoryRepository;
 import com.example.tnovel_backend.repository.payment.entity.Subscription;
+import com.example.tnovel_backend.repository.payment.entity.SubscriptionHistory;
 import com.example.tnovel_backend.repository.payment.entity.SubscriptionPayment;
 import com.example.tnovel_backend.repository.payment.entity.SubscriptionStatusHistory;
 import com.example.tnovel_backend.repository.payment.entity.vo.PayStatus;
@@ -37,6 +39,7 @@ public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionPaymentRepository subscriptionPaymentRepository;
     private final SubscriptionStatusHistoryRepository subscriptionStatusHistoryRepository;
+    private final SubscriptionHistoryRepository subscriptionHistoryRepository;
 
 
     @Transactional
@@ -56,6 +59,10 @@ public class SubscriptionService {
         SubscriptionStatusHistory history = SubscriptionStatusHistory.create(
                 SubscribeStatus.CANCELED, reason, subscription);
         subscriptionStatusHistoryRepository.save(history);
+
+        subscriptionHistoryRepository.save(
+                SubscriptionHistory.create(subscription.getId(), user.getUsername(), "CANCEL")
+        );
 
         return CancelSubscribeResponseDto.from(subscription, reason);
     }
@@ -90,6 +97,10 @@ public class SubscriptionService {
         );
         subscriptionStatusHistoryRepository.save(history);
 
+        subscriptionHistoryRepository.save(
+                SubscriptionHistory.create(subscription.getId(), user.getUsername(), "CONFIRM")
+        );
+
         return ConfirmSubscribeResponseDto.from(payment, subscription);
     }
 
@@ -120,6 +131,10 @@ public class SubscriptionService {
         subscriptionStatusHistoryRepository.save(history);
 
         subscription.fail();
+
+        subscriptionHistoryRepository.save(
+                SubscriptionHistory.create(subscription.getId(), user.getUsername(), "FAIL")
+        );
 
         return ConfirmSubscribeResponseDto.from(payment, subscription);
     }
