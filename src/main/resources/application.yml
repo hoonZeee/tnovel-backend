@@ -16,7 +16,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create   # 개발용: 스키마 자동 생성
+      ddl-auto: none   # 개발용: 스키마 자동 생성
     properties:
       hibernate:
         format_sql: true
