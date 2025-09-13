@@ -126,4 +126,3 @@
 
 - redirect url 수정
 - yml 수정
-

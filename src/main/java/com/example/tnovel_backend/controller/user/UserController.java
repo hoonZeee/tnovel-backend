@@ -50,7 +50,7 @@ public class UserController {
                     대신 브라우저에서 아래 URL로 접속하면 카카오 로그인 페이지로 이동합니다.
                     로그인 후에는 DB에 유저가 저장됩니다.
                     
-                    카카오 로그인 시작하기](http://localhost:8080/oauth2/authorization/kakao)
+                    [카카오 로그인 시작하기](http://localhost:8080/oauth2/authorization/kakao)
                     """
     )
     @GetMapping("/kakao-login-info")
@@ -83,6 +83,5 @@ public class UserController {
         }
         return ResponseEntity.ok(userService.withdraw(id));
     }
-
 
 }
